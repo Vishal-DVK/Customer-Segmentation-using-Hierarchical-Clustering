@@ -40,10 +40,10 @@ if uploaded_file is not None:
     # Cluster count selection
     n_clusters = st.slider("Select number of clusters", min_value=2, max_value=10, value=5)
 
-    # Fit Agglomerative Clustering
+    # Fit Agglomerative Clustering and offset cluster labels to start from 1
     model = AgglomerativeClustering(n_clusters=n_clusters, metric='euclidean', linkage='ward')
     y_ac = model.fit_predict(x_scaled)
-    data['Cluster'] = y_ac
+    data['Cluster'] = y_ac + 1  
 
     # Show clustered data
     st.subheader("Clustered Dataset")
@@ -54,19 +54,19 @@ if uploaded_file is not None:
     fig2, ax2 = plt.subplots()
     colors = ['red', 'blue', 'green', 'cyan', 'magenta', 'orange', 'purple', 'brown', 'pink', 'gray']
 
-    for i in range(n_clusters):
-        cluster_points = x_scaled[y_ac == i]
+    for i in range(1, n_clusters + 1):
+        cluster_points = x_scaled[data['Cluster'] == i]
         if cluster_points.size > 0:
             ax2.scatter(
                 cluster_points[:, 0], cluster_points[:, 1],
-                s=100, color=colors[i % len(colors)], label=f'Cluster {i+1}'
+                s=100, color=colors[(i - 1) % len(colors)], label=f'Cluster {i}'
             )
 
     ax2.set_title("Customer Clusters")
     ax2.set_xlabel("Annual Income (scaled)")
     ax2.set_ylabel("Spending Score (scaled)")
     ax2.legend()
-    fig2.patch.set_facecolor('white')  # for dark mode clarity
+    fig2.patch.set_facecolor('white') 
     st.pyplot(fig2)
 
     # ---------------------------------------
